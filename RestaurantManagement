@@ -7,20 +7,22 @@
 using namespace std;
 
 class DrinksAndFoods{
-    public:
+    protected:
+        int id;
         string name;
         int price;
-    DrinksAndFoods();
-        int id;
-    void setDrinksAndFoods();
-    int getID();
-    string getName();
-    int getPrice();
-    void setName();
-    void setName(string name);
-    void setPrice();
-    void setPrice(int price);
-    void setID();
+    public:
+        DrinksAndFoods();
+        void setDrinksAndFoods();
+        void setID(int id);
+        int getID();
+        string getName();
+        int getPrice();
+        void setName();
+        void setName(string name);
+        void setPrice();
+        void setPrice(int price);
+        void setID();
 };
 DrinksAndFoods::DrinksAndFoods(){
     this->id = 0;
@@ -35,6 +37,9 @@ void DrinksAndFoods::setDrinksAndFoods(){
     cin>>this->name;
     cout<<"Enter price:"<<endl;
     cin>>this->price;
+}
+void DrinksAndFoods::setID(int id){
+    this->id = id;
 }
 int DrinksAndFoods::getID(){
     return this->id;
@@ -60,8 +65,7 @@ void DrinksAndFoods::setPrice(int price){
     this->price = price;
 }
 void DrinksAndFoods::setID(){
-    cin.ignore(250,'\n');
-    uint8_t id;
+    int id;
     cin>>id;
     this->id = id;
 }
@@ -69,9 +73,10 @@ void DrinksAndFoods::setID(){
 
 
 class Manager{
-    public:
+    private:
         vector<DrinksAndFoods> databaseDAF;
         uint8_t totalTables;
+    public:
         void setTotalTables();
         void addDrinksAndFoods();
         void updateDrinksAndFoods();
@@ -93,7 +98,7 @@ void Manager::updateDrinksAndFoods(){
     int tempOption;
     cin>>tempOption;
     for(int i = 0; i < databaseDAF.size();i++){
-        if(this->databaseDAF[i].id == tempID){
+        if(this->databaseDAF[i].getID() == tempID){
             if(tempOption == 1){
                 databaseDAF[i].setName();
             }else if(tempOption == 2){
@@ -115,9 +120,9 @@ void Manager::deleteDrinksAndFoods(){
 void Manager::getMenu(){
     cout<<"**This is the restaurant's menu**\n"<<"STT: \tName: \tID: \tPrice: \n";
     for(int i = 0; i < databaseDAF.size();i++){
-        cout<<"STT: "<<i+1<<"  Name: "<<databaseDAF[i].name.c_str()<<" "<<"ID: ";
+        cout<<"STT: "<<i+1<<"  Name: "<<databaseDAF[i].getName().c_str()<<" "<<"ID: ";
         printf("%d",databaseDAF[i].getID());
-        cout<<" "<<"Price: "<<databaseDAF[i].price<<endl;
+        cout<<" "<<"Price: "<<databaseDAF[i].getPrice()<<endl;
     }
 }
 void Manager::setTotalTables(){
@@ -129,10 +134,14 @@ void Manager::setTotalTables(){
 
 
 class Order:public DrinksAndFoods{
-    public:
+    private:
     int quantityofThatItem;
+    public:
     void setquantityofThatItem(int quantity){
         this->quantityofThatItem = quantity;
+    }
+    int getquantityofThatItem(){
+        return this->quantityofThatItem;
     }
 };
 
@@ -153,15 +162,17 @@ void ListOrder::addOrder(Manager Manager){
     cout<<"enter ID of Drink or Food you want to order:\n";
     int tempID;
     cin>>tempID;
-    tempOrder.id = tempID;
+    tempOrder.setID(tempID);
     for(DrinksAndFoods item:Manager.databaseDAF){
-        if(((int)(item.getID())) == tempOrder.id){
+        if(((int)(item.getID())) == tempOrder.getID()){
             tempOrder.setName(item.getName().c_str());
             tempOrder.setPrice(item.getPrice());
         }
     }
     cout<<"quantity of "<<tempOrder.getName().c_str()<<"is: "<<endl;
-    cin>>tempOrder.quantityofThatItem;
+    int tempQuantity;
+    cin>>tempQuantity;
+    tempOrder.setquantityofThatItem(tempQuantity);
     databaseListOrder.push_back(tempOrder);
 }
 void ListOrder::updateOrder(Manager Manager){
@@ -189,7 +200,9 @@ void ListOrder::updateOrder(Manager Manager){
                     }
                 }
                 cout<<"quantity of "<<tempOrder.getName().c_str()<<"is: "<<endl;
-                cin>>tempOrder.quantityofThatItem;
+                int temp;
+                cin>>temp;
+                tempOrder.setquantityofThatItem(temp);
                 item = tempOrder;
             }
         }
@@ -208,13 +221,13 @@ void ListOrder::deleteOrder(){
 void ListOrder::getListOrder(){
     cout<<"Your Order is: "<<endl;
     for(Order item:databaseListOrder){
-        cout<<(int)item.id<<"   "<<item.getName().c_str()<<"   "<<item.getPrice()<<"  "<<item.quantityofThatItem<<endl;
+        cout<<(int)item.getID()<<"   "<<item.getName().c_str()<<"   "<<item.getPrice()<<"  "<<item.getquantityofThatItem()<<endl;
     }
 }
 void ListOrder::getBill(){
     int totalMoney = 0;
     for(Order item:databaseListOrder){
-        totalMoney = (int)(item.getPrice())*(item.quantityofThatItem)+totalMoney;
+        totalMoney = (int)(item.getPrice())*(item.getquantityofThatItem())+totalMoney;
     }
     cout<<"Your bill is: "<<totalMoney<<endl;
     cout<<"Thanks you"<<endl;
